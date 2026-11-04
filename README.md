@@ -42,7 +42,7 @@ The manifest's `setup` block asks for these values, read from `config.agent` at 
 | ------------------------- | -------- | -------- | -------- | ----------------------------------------------------------------------- |
 | `agent.provider`          | Required | `object` | None     | The model the agent talks to, per the [provider shape](#provider-shape) |
 | `agent.mcp`               | Optional | `object` | None     | The MCP tool server the agent calls fleet tools through. Omitting this, or its `url`, still loads the app: the agent runs as a grounded chat with no fleet tools, and [why that happens](#troubleshooting) has its own entry. |
-| `agent.approvalTimeoutMs` | Optional | `number` | `120000` | How long a paused write waits for a decision. With none, the write does not run and the agent reports the approval as expired, not rejected |
+| `agent.approvalTimeoutMs` | Optional | `number` | `120000` | How long a paused write waits for a decision. With none, the write does not run. With `@tetherto/mdk-agent` 0.13.1 or later the agent reports the approval as expired; the 0.13.0 agent reports it as rejected |
 
 ### Provider shape
 
@@ -69,7 +69,7 @@ MCP tool server run elsewhere.
 | ----------------------- | ------------------------------------------------ | ------------------------------------ |
 | `agent.session.create`  | `POST /agent/sessions`                           |                                      |
 | `agent.session.message` | `POST /agent/sessions/:id/messages`              | `text/event-stream`; events carry `turnId`, `seq`, and `approvalId` on `pending_approval` |
-| `agent.approval.decide` | `POST /agent/sessions/:id/approvals/:approvalId` | Fail-safe timeout: the write does not run, reported as expired |
+| `agent.approval.decide` | `POST /agent/sessions/:id/approvals/:approvalId` | Fail-safe timeout: the write does not run (reported as expired from `@tetherto/mdk-agent` 0.13.1) |
 | `agent.session.delete`  | `DELETE /agent/sessions/:id`                     |                                      |
 
 Sessions bind to the caller's identity: the `kind:sub` of the token the Gateway verified against `spec.rbac` (so a user and a
